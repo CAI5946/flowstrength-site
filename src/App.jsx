@@ -12,13 +12,13 @@ import storeActiveDevicesImage from "../assets/store/focus_active.png";
 const storeUrl = "https://play.google.com/store/apps/details?id=com.flowstrength.myapp";
 
 const featureStrip = [
-  { label: "AI 分析", image: `${import.meta.env.BASE_URL}assets/AI.png` },
-  { label: "训练规划", image: `${import.meta.env.BASE_URL}assets/Home.png` },
-  { label: "训练执行", image: `${import.meta.env.BASE_URL}assets/Train.png` },
-  { label: "训练历史", image: `${import.meta.env.BASE_URL}assets/Record.png` },
-  { label: "训练补录", image: `${import.meta.env.BASE_URL}assets/Log.png` },
-  { label: "进度趋势", image: `${import.meta.env.BASE_URL}assets/Tracker.png` },
-  { label: "训练工具", image: `${import.meta.env.BASE_URL}assets/Tools.png` },
+  { label: "AI 分析", image: `${import.meta.env.BASE_URL}assets/AI.webp` },
+  { label: "训练规划", image: `${import.meta.env.BASE_URL}assets/Home.webp` },
+  { label: "训练执行", image: `${import.meta.env.BASE_URL}assets/Train.webp` },
+  { label: "训练历史", image: `${import.meta.env.BASE_URL}assets/Record.webp` },
+  { label: "训练补录", image: `${import.meta.env.BASE_URL}assets/Log.webp` },
+  { label: "进度趋势", image: `${import.meta.env.BASE_URL}assets/Tracker.webp` },
+  { label: "训练工具", image: `${import.meta.env.BASE_URL}assets/Tools.webp` },
 ];
 
 const userTestingMetrics = [
@@ -697,6 +697,8 @@ function FeatureStripSection() {
                 src={feature.image}
                 alt={`FlowStrength ${feature.label}功能截图`}
                 draggable={false}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
               />
             </figure>
           ))}
