@@ -1,0 +1,16 @@
+node_modules/
+dist/
+
+# Local visual-check captures; keep only the final QA evidence.
+implementation-ai.png
+implementation-desktop.png
+implementation-hero.png
+implementation-mobile.png
+implementation-overview.png
+implementation-experience.png
+implementation-mobile-experience.png
+implementation-ai-section.png
+implementation-results.png
+implementation-hero-final.png
+implementation-strip-final.png
+implementation-hero-lean.png
