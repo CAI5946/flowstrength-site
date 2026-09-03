@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import redditDemandImage from "../assets/屏幕截图 2026-09-03 134116.png";
-import feedbackLoadingImage from "../assets/comments/微信图片_20260901174926_44_102.jpg";
-import feedbackLocaleImage from "../assets/comments/微信图片_20260901174944_45_102.jpg";
-import feedbackOnboardingImage from "../assets/comments/微信图片_20260901175056_46_102.jpg";
-import feedbackLagImage from "../assets/comments/微信图片_20260901175056_47_102.jpg";
-import storeReviewEnglishImage from "../assets/store/focus_review_en.png";
-import storeReviewGreekImage from "../assets/store/focus_review_gk.png";
-import storeInstallsImage from "../assets/store/focus_installs.png";
-import storeActiveDevicesImage from "../assets/store/focus_active.png";
+import feedbackLoadingImage from "../assets/comments/微信图片_20260901174926_44_102.webp";
+import feedbackLocaleImage from "../assets/comments/微信图片_20260901174944_45_102.webp";
+import feedbackOnboardingImage from "../assets/comments/微信图片_20260901175056_46_102.webp";
+import feedbackLagImage from "../assets/comments/微信图片_20260901175056_47_102.webp";
+import storeReviewEnglishImage from "../assets/store/focus_review_en.webp";
+import storeReviewGreekImage from "../assets/store/focus_review_gk.webp";
+import storeInstallsImage from "../assets/store/focus_installs.webp";
+import storeActiveDevicesImage from "../assets/store/focus_active.webp";
 
 const storeUrl = "https://play.google.com/store/apps/details?id=com.flowstrength.myapp";
 
