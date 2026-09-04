@@ -295,17 +295,6 @@ img { max-width: 100%; }
   flex-direction: column;
   gap: 16px;
 }
-.needs-text-col .needs-header {
-  width: 100%;
-  margin: 0 0 4px;
-}
-.needs-text-col .needs-header h2 {
-  margin: 0;
-  font-size: clamp(36px, 4.8vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.045em;
-  font-weight: 750;
-}
 .needs-text-col .need-summary {
   margin: 0;
   max-width: none;
@@ -1915,11 +1904,6 @@ img { max-width: 100%; }
   box-shadow: 0 8px 24px rgba(16, 18, 17, 0.07);
 }
 
-.launch-operations .chapter-header,
-.launch-operations__body {
-  width: min(1360px, calc(100% - 7vw));
-}
-
 .launch-operations__body {
   display: flex;
   flex-direction: column;
@@ -2111,12 +2095,6 @@ img { max-width: 100%; }
 }
 
 /* Project reflection - Editorial Ledger (No Cards) */
-.project-reflection .chapter-header,
-.project-reflection__body {
-  width: min(1360px, calc(100% - 7vw));
-  margin: 0 auto;
-}
-
 .project-reflection__body {
   display: flex;
   flex-direction: column;
@@ -2878,7 +2856,7 @@ img { max-width: 100%; }
 }
 
 .site-footer__inner {
-  width: min(1360px, calc(100% - 7vw));
+  width: min(1200px, calc(100% - 12vw));
   margin: 0 auto;
   display: flex;
   align-items: center;

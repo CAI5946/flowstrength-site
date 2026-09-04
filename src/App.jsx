@@ -30,23 +30,19 @@ const userTestingMetrics = [
 const userTestDimensions = [
   {
     tag: "新手起步门槛",
-    title: "降低首期计划创建认知成本",
-    desc: "内置推荐周期与渐进配置模板，消除起步配置障碍",
+    desc: "内置推荐模板，消除起步配置障碍",
   },
   {
     tag: "冷启动响应速度",
-    title: "缩短启动等待，提升秒开体验",
     desc: "数据异步预加载与查询精简，冷启动耗时收敛至 < 300ms",
   },
   {
-    tag: "训练执行心流",
-    title: "保障做组打勾与滑动零掉帧",
-    desc: "局部事务写入与非必要特效裁剪，核心操作稳定 60fps",
+    tag: "操作流畅度",
+    desc: "消除不必要的动画和特效，调整组件关系，避免全局重绘",
   },
   {
-    tag: "全球化与设备一致性",
-    title: "全域动态本地化与布局容错",
-    desc: "l10n 动态切换全量校验，杜绝漏译并适配系统字体缩放",
+    tag: "本地化适配",
+    desc: "杜绝硬编码，统一采用l10n 动态切换全量校验",
   },
 ];
 
@@ -669,16 +665,16 @@ export function App() {
       <header className="site-header">
         <a className="wordmark" href="#top">FlowStrength</a>
         <nav aria-label="页面导航">
-          <a href="#overview">概览</a>
-          <a href="#requirements">痛点</a>
-          <a href="#competitors">竞品</a>
-          <a href="#product-decisions">决策</a>
-          <a href="#ai-system">AI 系统</a>
-          <a href="#evaluation">AI 评测</a>
+          <a href="#overview">产品概览</a>
+          <a href="#requirements">用户痛点</a>
+          <a href="#competitors">竞品分析</a>
+          <a href="#product-decisions">产品决策</a>
+          <a href="#ai-system">AI系统</a>
+          <a href="#evaluation">AI评测</a>
           <a href="#user-testing">用户测试</a>
           <a href="#operations">上线迭代</a>
-          <a href="#reflection">复盘</a>
-          <a href="#contact">联系</a>
+          <a href="#reflection">项目复盘</a>
+          <a href="#contact">联系方式</a>
         </nav>
         <span className="scroll-progress" style={{ transform: `scaleX(${progress})` }} />
       </header>
@@ -704,11 +700,12 @@ export function App() {
 
         {/* 02 用户痛点 */}
         <section className="section-chapter requirements-chapter" id="requirements" aria-labelledby="requirements-title">
+          <header className="chapter-header" data-reveal>
+            <h2 id="requirements-title">用户痛点</h2>
+          </header>
+
           <div className="chapter-body chapter-body--needs-split">
             <div className="needs-text-col" data-reveal>
-              <header className="needs-header">
-                <h2 id="requirements-title">用户痛点</h2>
-              </header>
               <p className="need-summary">训练数据与训练分析之间存在断层</p>
 
               <div className="needs-points">
@@ -1180,7 +1177,7 @@ export function App() {
 
                       <div className="diff-section diff-section--add">
                         <h4>目标行为</h4>
-                        <p>声明覆盖窗口与样本容量，在数据不足时主动降级为单次事实客观陈述，拦截“总共/全部”等全局定性词。</p>
+                        <p>声明查询覆盖窗口与样本容量，避免模型把可见记录误认为全部历史。</p>
                       </div>
                     </div>
                   </div>
@@ -1211,7 +1208,7 @@ export function App() {
 
                       <div className="diff-section diff-section--add">
                         <h4>目标行为</h4>
-                        <p>基于确定性指标识别平台期，说明证据范围，并给出可执行且不过度确定的调整建议。</p>
+                        <p>结合同计划/同动作的训练历史数据进行结合分析，并给出可执行且不过度确定的调整建议。</p>
                       </div>
                     </div>
                   </div>
@@ -1223,11 +1220,12 @@ export function App() {
 
         {/* 09 用户测试 */}
         <section className="section-chapter user-testing-chapter" id="user-testing" aria-labelledby="user-testing-title">
+          <header className="chapter-header" data-reveal>
+            <h2 id="user-testing-title">用户测试</h2>
+          </header>
+
           <div className="chapter-body chapter-body--needs-split">
             <div className="needs-text-col" data-reveal>
-              <header className="needs-header">
-                <h2 id="user-testing-title">用户测试</h2>
-              </header>
               <div className="testing-metric-badges" aria-label="用户测试关键指标">
                 {userTestingMetrics.map((m) => (
                   <span className="testing-metric-badge" key={m.label}>
@@ -1240,7 +1238,6 @@ export function App() {
                 {userTestDimensions.map((item, idx) => (
                   <div className="need-point" key={item.tag}>
                     <span className="need-point__tag">{`0${idx + 1} // ${item.tag}`}</span>
-                    <h4>{item.title}</h4>
                     <p>{item.desc}</p>
                   </div>
                 ))}
