@@ -130,472 +130,189 @@ const demandEvidence = [
   },
 ];
 
-function CompetitorFlowSvg() {
+const productDecisions = [
+  {
+    index: "01",
+    title: "AI 范围",
+    thesis: "优先切入训练复盘阶段",
+    stages: [
+      {
+        status: "discard",
+        tag: "规划阶段 · 难以满足需求",
+        desc: "计划与个人偏好、健身条件等多因素强相关，AI 难以在信息有限的情况下给出满意方案",
+      },
+      {
+        status: "discard",
+        tag: "执行阶段 · 延迟高且提升有限",
+        desc: "举铁做组需要毫秒级打卡；AI 既存在网络和生成延迟，也难以减少用户物理操作步骤",
+      },
+      {
+        status: "adopt",
+        tag: "复盘阶段 · 高价值切入",
+        desc: "固定统计图表分析受限，大模型擅长上下文推理与模式识别，能跨时间、跨动作进行灵活深度分析",
+      },
+    ],
+  },
+  {
+    index: "02",
+    title: "AI 架构",
+    thesis: "将分析主导权交给模型",
+    stages: [
+      {
+        status: "discard",
+        tag: "规则主导（已放弃）· AI能力受限",
+        desc: "用固定规则树匹配用户意图，只能回答预设指标；面对复杂的长尾提问，完全丧失了跨数据归因能力。",
+      },
+      {
+        status: "adopt",
+        tag: "模型主导（最终选择）· 动态多步探索",
+        desc: "由模型自主理解长尾提问，决定调什么工具、对比哪段数据；能像真人教练一样，根据线索层层追踪原因。",
+      },
+      {
+        status: "guard",
+        tag: "受控运行 · 严格限制调用预算",
+        desc: "给予模型分析空间，但不给无界自由；工程上硬性约束工具调用步数与 Token 预算，超时或异常确定性回退。",
+      },
+    ],
+  },
+  {
+    index: "03",
+    title: "AI 权限",
+    thesis: "模型提需求，工具做计算，用户定结果",
+    stages: [
+      {
+        status: "neutral",
+        tag: "指标运算 · 本地专用工具承载",
+        desc: "模型只负责“要什么指标”；容量统计、极限估算等派生运算由本地 Tool 确定性算出，数据不足时主动标明局限。",
+      },
+      {
+        status: "neutral",
+        tag: "计划干预 · 仅生成结构化草案",
+        desc: "模型被物理剥离数据库写权限；所有训练调整均以可视化 Diff 草案呈现，无法在后台私自篡改训练资产。",
+      },
+      {
+        status: "adopt",
+        tag: "执行确认 · 用户拥有最高权限",
+        desc: "是否采纳建议、何时应用变动，裁决权完全保留在用户手中，彻底消除用户对数据失控的安全顾虑。",
+      },
+    ],
+  },
+];
+
+function CompetitorFlowChart() {
   const lanes = [
     {
-      x: 12,
-      cx: 124,
-      mode: "纯记录",
+      id: "hevy",
       name: "Hevy",
-      step1: "手动录入组次",
-      step2: "静态历史图表",
-      bottleneck: "无归因，停滞全靠人脑猜",
-      step3: "人工重排课表",
-      outcome: "保留控制权，但分析成本极高",
+      type: "记录与统计",
+      data: "长期做组、容量、1RM 与训练统计",
+      reasoning: "呈现趋势与纪录，由用户解释停滞原因",
+      action: "用户手动调整后续训练安排",
+      boundary: "数据连续，解释与调整依赖用户",
     },
     {
-      x: 252,
-      cx: 360,
-      mode: "算法推荐",
+      id: "fitbod",
       name: "Fitbod",
-      step1: "记录单次表现",
-      step2: "算法黑盒计算",
-      bottleneck: "不给依据，强行覆盖课表",
-      step3: "推送今日计划",
-      outcome: "省心，但打乱进阶周期",
+      type: "算法推荐型",
+      data: "历史训练、恢复、目标、设备与偏好",
+      reasoning: "算法生成训练推荐，用户可调整输入",
+      action: "刷新推荐训练，用户仍可编辑",
+      boundary: "自动化高，决策依据不完全透明",
     },
     {
-      x: 492,
-      cx: 596,
-      mode: "对话式 AI",
+      id: "arvo",
       name: "Arvo",
-      step1: "读取历史对话",
-      step2: "模型自由推演",
-      bottleneck: "无本地约束，无法受控落盘",
-      step3: "聊天窗口给建议",
-      outcome: "对话灵活，但无法落库执行",
+      type: "AI 动态指导",
+      data: "训练历史、目标约束与当组表现",
+      reasoning: "AI 逐组判断，并提供建议与解释",
+      action: "实时调整，或激活并撤销计划",
+      boundary: "执行指导强，跨周期分析边界待验证",
     },
   ];
 
+  const stages = [
+    { key: "data", label: "01 数据输入" },
+    { key: "reasoning", label: "02 判断方式" },
+    { key: "action", label: "03 调整落地" },
+  ];
+
   return (
-    <svg
-      className="competitor-flow-svg"
-      viewBox="0 0 720 376"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="同一训练任务下三种产品机制的专业流程图"
-    >
-      <defs>
-        <marker
-          id="flow-arrow-head"
-          viewBox="0 0 8 8"
-          refX="6"
-          refY="4"
-          markerWidth="5"
-          markerHeight="5"
-          orient="auto-start-reverse"
-        >
-          <path d="M 1 1 L 7 4 L 1 7 z" fill="rgba(23, 107, 80, 0.45)" />
-        </marker>
-      </defs>
+    <div className="competitor-flow-chart" role="region" aria-label="同任务流程拆解图">
+      <div className="flow-shared-start">
+        <span className="flow-start-tag">基准任务</span>
+        <span className="flow-start-title">基于过去 8 周记录，解释平台期并决定下周如何调整</span>
+      </div>
 
-      {/* 任务起点：极简无废话单行 */}
-      <text
-        x="360"
-        y="18"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fill="#176b50"
-        fontSize="11"
-        fontWeight="800"
-        letterSpacing="0.04em"
-      >
-        基准任务：连续 8 周做组复盘与计划调整
-      </text>
+      <div className="flow-desktop">
+        <div className="flow-tree-connector" aria-hidden="true">
+          <svg viewBox="0 0 600 24" fill="none" preserveAspectRatio="none" className="flow-tree-svg">
+            <path d="M 300 0 L 300 12 M 100 12 L 500 12 M 100 12 L 100 24 M 300 12 L 300 24 M 500 12 L 500 24" />
+            <circle cx="100" cy="24" r="2" />
+            <circle cx="300" cy="24" r="2" />
+            <circle cx="500" cy="24" r="2" />
+          </svg>
+        </div>
 
-      {/* 树状分叉连线 */}
-      <path
-        d="M 360 28 L 360 40 M 124 40 L 596 40 M 124 40 L 124 52 M 360 40 L 360 52 M 596 40 L 596 52"
-        stroke="rgba(23, 107, 80, 0.3)"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <circle cx="124" cy="52" r="2.5" fill="rgba(23, 107, 80, 0.5)" />
-      <circle cx="360" cy="52" r="2.5" fill="rgba(23, 107, 80, 0.5)" />
-      <circle cx="596" cy="52" r="2.5" fill="rgba(23, 107, 80, 0.5)" />
+        <div className="flow-grid-row flow-grid-row--header">
+          {lanes.map((lane) => (
+            <div key={lane.id} className="flow-lane-header">
+              <span className="flow-lane-badge">{lane.type}</span>
+              <strong className="flow-lane-name">{lane.name}</strong>
+            </div>
+          ))}
+        </div>
 
-      {/* 泳道垂直发丝分割线 */}
-      <line x1="240" y1="56" x2="240" y2="370" stroke="rgba(23, 107, 80, 0.12)" strokeWidth="1" strokeDasharray="3 3" />
-      <line x1="480" y1="56" x2="480" y2="370" stroke="rgba(23, 107, 80, 0.12)" strokeWidth="1" strokeDasharray="3 3" />
+        {stages.map((stage) => (
+          <div key={stage.key} className="flow-stage-group">
+            <div className="flow-stage-divider">
+              <span className="flow-stage-label">{stage.label}</span>
+            </div>
+            <div className="flow-grid-row">
+              {lanes.map((lane) => (
+                <div key={lane.id} className="flow-node-card">
+                  <p className="flow-node-text">{lane[stage.key]}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
 
-      {/* 三条泳道 */}
-      {lanes.map((lane) => (
-        <g key={lane.name}>
-          {/* 泳道表头 */}
-          <text
-            x={lane.x + 8}
-            y="68"
-            fill="#176b50"
-            fontSize="10"
-            fontWeight="750"
-            letterSpacing="0.04em"
-          >
-            {lane.mode}
-          </text>
-          <text
-            x={lane.x + 8}
-            y="88"
-            fill="#101211"
-            fontSize="17"
-            fontWeight="800"
-            letterSpacing="-0.02em"
-          >
-            {lane.name}
-          </text>
+        <div className="flow-stage-divider flow-stage-divider--boundary">
+          <span className="flow-stage-label">关键边界</span>
+        </div>
+        <div className="flow-grid-row">
+          {lanes.map((lane) => (
+            <div key={lane.id} className="flow-node-card flow-node-card--boundary">
+              <p className="flow-node-text">{lane.boundary}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
-          {/* 箭头 1 */}
-          <path
-            d={`M ${lane.cx} 98 L ${lane.cx} 108`}
-            stroke="rgba(23, 107, 80, 0.35)"
-            strokeWidth="1.2"
-            markerEnd="url(#flow-arrow-head)"
-          />
+      <div className="flow-mobile">
+        {lanes.map((lane) => (
+          <article key={lane.id} className="flow-mobile-lane">
+            <header>
+              <strong>{lane.name}</strong>
+              <span>{lane.type}</span>
+            </header>
+            <ol>
+              {stages.map((stage) => (
+                <li key={stage.key}>
+                  <span>{stage.label.slice(3)}</span>
+                  <p>{lane[stage.key]}</p>
+                </li>
+              ))}
+            </ol>
+            <p className="flow-mobile-boundary">{lane.boundary}</p>
+          </article>
+        ))}
+      </div>
 
-          {/* 阶段 01: 采集 */}
-          <text
-            x={lane.x + 8}
-            y="120"
-            fill="#176b50"
-            fontSize="9.5"
-            fontWeight="800"
-            letterSpacing="0.05em"
-          >
-            01 采集
-          </text>
-          <text
-            x={lane.x + 8}
-            y="136"
-            fill="#101211"
-            fontSize="12"
-            fontWeight="600"
-          >
-            {lane.step1}
-          </text>
-
-          {/* 箭头 2 */}
-          <path
-            d={`M ${lane.cx} 146 L ${lane.cx} 156`}
-            stroke="rgba(23, 107, 80, 0.35)"
-            strokeWidth="1.2"
-            markerEnd="url(#flow-arrow-head)"
-          />
-
-          {/* 阶段 02: 分析 */}
-          <text
-            x={lane.x + 8}
-            y="168"
-            fill="#176b50"
-            fontSize="9.5"
-            fontWeight="800"
-            letterSpacing="0.05em"
-          >
-            02 分析
-          </text>
-          <text
-            x={lane.x + 8}
-            y="184"
-            fill="#101211"
-            fontSize="12"
-            fontWeight="600"
-          >
-            {lane.step2}
-          </text>
-
-          {/* 关键断层（红色发丝重音线，无卡片框） */}
-          <line
-            x1={lane.x + 8}
-            y1="196"
-            x2={lane.x + 8}
-            y2="230"
-            stroke="#ef4444"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-          <text
-            x={lane.x + 18}
-            y="207"
-            fill="#dc2626"
-            fontSize="9.5"
-            fontWeight="800"
-            letterSpacing="0.04em"
-          >
-            断层 ➔
-          </text>
-          <text
-            x={lane.x + 18}
-            y="225"
-            fill="#991b1b"
-            fontSize="11.5"
-            fontWeight="600"
-          >
-            {lane.bottleneck}
-          </text>
-
-          {/* 箭头 3 */}
-          <path
-            d={`M ${lane.cx} 240 L ${lane.cx} 250`}
-            stroke="rgba(23, 107, 80, 0.35)"
-            strokeWidth="1.2"
-            markerEnd="url(#flow-arrow-head)"
-          />
-
-          {/* 阶段 03: 调整 */}
-          <text
-            x={lane.x + 8}
-            y="262"
-            fill="#176b50"
-            fontSize="9.5"
-            fontWeight="800"
-            letterSpacing="0.05em"
-          >
-            03 调整
-          </text>
-          <text
-            x={lane.x + 8}
-            y="278"
-            fill="#101211"
-            fontSize="12"
-            fontWeight="600"
-          >
-            {lane.step3}
-          </text>
-
-          {/* 箭头 4 */}
-          <path
-            d={`M ${lane.cx} 288 L ${lane.cx} 298`}
-            stroke="rgba(23, 107, 80, 0.35)"
-            strokeWidth="1.2"
-            markerEnd="url(#flow-arrow-head)"
-          />
-
-          {/* 终态 */}
-          <line
-            x1={lane.x + 8}
-            y1="310"
-            x2={lane.x + 8}
-            y2="344"
-            stroke="#94a3b8"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-          <text
-            x={lane.x + 18}
-            y="321"
-            fill="#64748b"
-            fontSize="9.5"
-            fontWeight="800"
-            letterSpacing="0.04em"
-          >
-            终态
-          </text>
-          <text
-            x={lane.x + 18}
-            y="339"
-            fill="#1e293b"
-            fontSize="11.5"
-            fontWeight="600"
-          >
-            {lane.outcome}
-          </text>
-        </g>
-      ))}
-    </svg>
+    </div>
   );
 }
 
-function AppSystemArchitectureSvg() {
-  return (
-    <svg
-      className="app-architecture-svg"
-      viewBox="0 0 940 570"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="FlowStrength 全局客户端分层系统工程架构与核心权衡图"
-    >
-      <defs>
-        <marker
-          id="app-arch-flow"
-          viewBox="0 0 8 8"
-          refX="6"
-          refY="4"
-          markerWidth="5"
-          markerHeight="5"
-          orient="auto-start-reverse"
-        >
-          <path d="M 1 1 L 7 4 L 1 7 z" fill="rgba(23, 107, 80, 0.6)" />
-        </marker>
-        <marker
-          id="app-arch-flow-amber"
-          viewBox="0 0 8 8"
-          refX="6"
-          refY="4"
-          markerWidth="5"
-          markerHeight="5"
-          orient="auto-start-reverse"
-        >
-          <path d="M 1 1 L 7 4 L 1 7 z" fill="rgba(180, 83, 9, 0.6)" />
-        </marker>
-      </defs>
-
-      {/* ===== 左侧全局客户端分层架构 (LAYER 1 - 5) ===== */}
-
-      {/* LAYER 1 */}
-      <rect x="16" y="14" width="680" height="84" rx="10" fill="rgba(243, 251, 247, 0.65)" stroke="rgba(23, 107, 80, 0.22)" />
-      <text x="30" y="31" fill="#176b50" fontSize="10.5" fontWeight="800" letterSpacing="0.04em">LAYER 1 · 呈现与交互容器层 (Presentation &amp; Shell)</text>
-
-      <rect x="30" y="42" width="206" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="42" y="58" fill="#101211" fontSize="11" fontWeight="750">TrainingShellScreen</text>
-      <text x="42" y="74" fill="#64748b" fontSize="9.5">全局常驻悬浮训练条 · 跨Tab秒切</text>
-
-      <rect x="248" y="42" width="208" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="260" y="58" fill="#101211" fontSize="11" fontWeight="750">ActiveWorkoutView</text>
-      <text x="260" y="74" fill="#64748b" fontSize="9.5">做组打勾交互流 · 毫秒级即时响应</text>
-
-      <rect x="468" y="42" width="216" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="480" y="58" fill="#101211" fontSize="11" fontWeight="750">AnalyticsDashboard</text>
-      <text x="480" y="74" fill="#64748b" fontSize="9.5">训练复盘图表 · 历史表现模式分析</text>
-
-      {/* L1 -> L2 引线 */}
-      <path d="M 356 98 L 356 116" stroke="rgba(23, 107, 80, 0.45)" strokeWidth="1.2" markerEnd="url(#app-arch-flow)" />
-      <text x="364" y="110" fill="#176b50" fontSize="8.5" fontWeight="700">用户 Intent 操作 / AppState 响应式流转</text>
-
-      {/* LAYER 2 */}
-      <rect x="16" y="118" width="680" height="84" rx="10" fill="rgba(23, 107, 80, 0.04)" stroke="rgba(23, 107, 80, 0.22)" />
-      <text x="30" y="135" fill="#176b50" fontSize="10.5" fontWeight="800" letterSpacing="0.04em">LAYER 2 · 核心业务与全局状态层 (Core Services &amp; AppState)</text>
-
-      <rect x="30" y="146" width="156" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="40" y="162" fill="#101211" fontSize="10.5" fontWeight="750">AppState</text>
-      <text x="40" y="178" fill="#64748b" fontSize="9">ChangeNotifier · 响应式中枢</text>
-
-      <rect x="198" y="146" width="170" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="208" y="162" fill="#101211" fontSize="10.5" fontWeight="750">ActiveTrainingService</text>
-      <text x="208" y="178" fill="#64748b" fontSize="9">执行生命周期 · 高精度计时</text>
-
-      <rect x="380" y="146" width="160" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="390" y="162" fill="#101211" fontSize="10.5" fontWeight="750">CycleProgramService</text>
-      <text x="390" y="178" fill="#64748b" fontSize="9">微周期滚动 · 渐进负荷推算</text>
-
-      <rect x="552" y="146" width="132" height="46" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="562" y="162" fill="#101211" fontSize="10.5" fontWeight="750">SubscriptionService</text>
-      <text x="562" y="178" fill="#64748b" fontSize="9">Play 订阅 · 原子额度预占</text>
-
-      {/* L2 -> L3 引线 */}
-      <path d="M 356 202 L 356 222" stroke="rgba(23, 107, 80, 0.45)" strokeWidth="1.2" markerEnd="url(#app-arch-flow)" />
-      <text x="364" y="215" fill="#176b50" fontSize="8.5" fontWeight="700">沙箱隔离调用：受控意图派发与会话生命周期</text>
-
-      {/* LAYER 3: 受控 AI 引擎层 (重点高亮) */}
-      <rect x="16" y="224" width="680" height="92" rx="10" fill="rgba(243, 251, 247, 0.9)" stroke="rgba(23, 107, 80, 0.35)" strokeWidth="1.5" />
-      <text x="30" y="241" fill="#176b50" fontSize="10.5" fontWeight="800" letterSpacing="0.04em">LAYER 3 · 受控 AI 引擎层 (Grounded AI Engine &amp; Sandbox)</text>
-      
-      {/* 章节互通导流高亮胶囊 */}
-      <rect x="424" y="226" width="260" height="20" rx="10" fill="#176b50" />
-      <text x="434" y="240" fill="#ffffff" fontSize="9" fontWeight="800">★ 核心解构对象 · 下一章深入剖析 ➔</text>
-
-      <rect x="30" y="252" width="206" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.2)" />
-      <text x="42" y="268" fill="#101211" fontSize="11" fontWeight="750">AgentRuntime Sandbox</text>
-      <text x="42" y="284" fill="#64748b" fontSize="9.5">单会话 ReAct 状态机 · 权限隔离</text>
-      <text x="42" y="296" fill="#176b50" fontSize="8" fontWeight="700">maxTurns 限制 · 超时安全熔断</text>
-
-      <rect x="248" y="252" width="224" height="52" rx="7" fill="#effaf5" stroke="rgba(23, 107, 80, 0.35)" />
-      <text x="260" y="268" fill="#176b50" fontSize="11" fontWeight="800">Deterministic 9-Tools</text>
-      <text x="260" y="284" fill="#64748b" fontSize="9.5">本地专用纯函数工具注册表</text>
-      <text x="260" y="296" fill="#176b50" fontSize="8" fontWeight="700">毫秒级计算 · 严禁模型自由脑补</text>
-
-      <rect x="484" y="252" width="200" height="52" rx="7" fill="#fffbeb" stroke="rgba(180, 83, 9, 0.35)" />
-      <text x="496" y="268" fill="#b45309" fontSize="11" fontWeight="800">ControlledWrite</text>
-      <text x="496" y="284" fill="#b45309" fontSize="9.5">零直接写权限 · 仅生成 Diff 草案</text>
-      <text x="496" y="296" fill="#b45309" fontSize="8" fontWeight="700">必须经由用户物理审查确认</text>
-
-      {/* L3 <-> L4 双向交互引线 */}
-      <path d="M 320 336 L 320 316" stroke="rgba(23, 107, 80, 0.5)" strokeWidth="1.2" markerEnd="url(#app-arch-flow)" />
-      <path d="M 390 316 L 390 336" stroke="rgba(180, 83, 9, 0.5)" strokeWidth="1.2" markerEnd="url(#app-arch-flow-amber)" />
-      <text x="180" y="329" fill="#176b50" fontSize="8.5" fontWeight="700">Tool 只读查询本地训练事实 (P99 &lt; 5ms)</text>
-      <text x="402" y="329" fill="#b45309" fontSize="8.5" fontWeight="700">受控 Diff 草案（用户确认后落盘）</text>
-
-      {/* LAYER 4 */}
-      <rect x="16" y="338" width="680" height="92" rx="10" fill="rgba(23, 107, 80, 0.04)" stroke="rgba(23, 107, 80, 0.22)" />
-      <text x="30" y="355" fill="#176b50" fontSize="10.5" fontWeight="800" letterSpacing="0.04em">LAYER 4 · 本地优先持久化层 (Local-First Persistence &amp; Storage)</text>
-
-      <rect x="30" y="366" width="216" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="42" y="382" fill="#101211" fontSize="11" fontWeight="750">Isar Database (NoSQL)</text>
-      <text x="42" y="398" fill="#64748b" fontSize="9.5">高性能嵌入式存储 · 100% 离线可用</text>
-      <text x="42" y="410" fill="#176b50" fontSize="8" fontWeight="700">数据 100% 私有，完全不出设备本地</text>
-
-      <rect x="256" y="366" width="216" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="268" y="382" fill="#101211" fontSize="11" fontWeight="750">Atomic Transaction Manager</text>
-      <text x="268" y="398" fill="#64748b" fontSize="9.5">单组打勾即时事务落盘 · 零丢数据</text>
-      <text x="268" y="410" fill="#176b50" fontSize="8" fontWeight="700">异常闪退/强杀冷启动单向自愈推演</text>
-
-      <rect x="482" y="366" width="202" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="494" y="382" fill="#101211" fontSize="11" fontWeight="750">Data Portability (JSON)</text>
-      <text x="494" y="398" fill="#64748b" fontSize="9.5">用户数据主权 · 标准 JSON 导入导出</text>
-      <text x="494" y="410" fill="#64748b" fontSize="8">全量离线冷备份与原子性恢复验证</text>
-
-      {/* L4 -> L5 引线 */}
-      <path d="M 356 430 L 356 448" stroke="rgba(23, 107, 80, 0.45)" strokeWidth="1.2" markerEnd="url(#app-arch-flow)" />
-      <text x="364" y="442" fill="#176b50" fontSize="8.5" fontWeight="700">安全通信：TLS 1.3 客户端直连与端侧正版验证</text>
-
-      {/* LAYER 5 */}
-      <rect x="16" y="450" width="680" height="92" rx="10" fill="rgba(243, 251, 247, 0.65)" stroke="rgba(23, 107, 80, 0.22)" />
-      <text x="30" y="467" fill="#176b50" fontSize="10.5" fontWeight="800" letterSpacing="0.04em">LAYER 5 · 云端轻基础设施 (Zero-Backend Cloud &amp; Integrations)</text>
-
-      <rect x="30" y="478" width="216" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="42" y="494" fill="#101211" fontSize="11" fontWeight="750">Firebase AI Logic</text>
-      <text x="42" y="510" fill="#64748b" fontSize="9.5">端侧直连 Gemini 2.5 模型</text>
-      <text x="42" y="522" fill="#176b50" fontSize="8" fontWeight="700">零自建后端运维 · 消除单点故障</text>
-
-      <rect x="256" y="478" width="216" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="268" y="494" fill="#101211" fontSize="11" fontWeight="750">Firebase App Check</text>
-      <text x="268" y="510" fill="#64748b" fontSize="9.5">设备完整性与正版安全校验</text>
-      <text x="268" y="522" fill="#64748b" fontSize="8">Play Integrity 认证防 API 盗刷</text>
-
-      <rect x="482" y="478" width="202" height="52" rx="7" fill="#ffffff" stroke="rgba(23, 107, 80, 0.16)" />
-      <text x="494" y="494" fill="#101211" fontSize="11" fontWeight="750">Google Play Billing</text>
-      <text x="494" y="510" fill="#64748b" fontSize="9.5">官方月度订阅通道</text>
-      <text x="494" y="522" fill="#64748b" fontSize="8">离线凭证缓存 · 原子购买校验</text>
-
-      {/* ===== 右侧侧边栏：核心架构工程权衡 (KEY ARCHITECTURAL DECISIONS) ===== */}
-      <rect x="712" y="14" width="212" height="528" rx="10" fill="rgba(16, 18, 17, 0.025)" stroke="rgba(16, 18, 17, 0.12)" />
-      <text x="726" y="36" fill="#101211" fontSize="13" fontWeight="800" letterSpacing="-0.01em">核心架构工程权衡</text>
-      <text x="726" y="51" fill="#64748b" fontSize="9">本地优先 · 故障自愈 · 单向沙箱</text>
-
-      {/* 权衡 1 */}
-      <rect x="724" y="66" width="188" height="142" rx="8" fill="#ffffff" stroke="rgba(23, 107, 80, 0.35)" />
-      <rect x="724" y="66" width="4" height="142" rx="2" fill="#176b50" />
-      <text x="736" y="85" fill="#176b50" fontSize="11" fontWeight="800">01 · 本地优先与零后端</text>
-      <text x="736" y="103" fill="#334155" fontSize="9.5" fontWeight="600">数据 100% 私有，离线秒开。</text>
-      <text x="736" y="121" fill="#64748b" fontSize="9">力量训练用户对隐私极度敏感；</text>
-      <text x="736" y="137" fill="#64748b" fontSize="9">免注册登录，数据不出设备；</text>
-      <text x="736" y="153" fill="#64748b" fontSize="9">无自建服务器，直连模型 API，</text>
-      <text x="736" y="169" fill="#101211" fontSize="9" fontWeight="700">彻底根除宕机与数据泄露隐患。</text>
-      <text x="736" y="195" fill="#176b50" fontSize="8" fontWeight="700">✓ 零服务器运维 · 离线绝对可用</text>
-
-      {/* 权衡 2 */}
-      <rect x="724" y="222" width="188" height="142" rx="8" fill="#ffffff" stroke="rgba(16, 18, 17, 0.25)" />
-      <rect x="724" y="222" width="4" height="142" rx="2" fill="#101211" />
-      <text x="736" y="241" fill="#101211" fontSize="11" fontWeight="800">02 · 事务落盘与故障自愈</text>
-      <text x="736" y="259" fill="#334155" fontSize="9.5" fontWeight="600">保护举铁心流，绝不丢组。</text>
-      <text x="736" y="277" fill="#64748b" fontSize="9">单组打勾事务级原子落盘，</text>
-      <text x="736" y="293" fill="#176b50" fontSize="9" fontWeight="700">本地读写耗时稳定 P99 &lt; 5ms。</text>
-      <text x="736" y="309" fill="#64748b" fontSize="9">遭遇系统强杀或断电冷启动时，</text>
-      <text x="736" y="325" fill="#101211" fontSize="9" fontWeight="700">单向状态推演恢复活跃训练会话。</text>
-      <text x="736" y="351" fill="#176b50" fontSize="8" fontWeight="700">✓ 核心操作稳定 60fps · 零丢失</text>
-
-      {/* 权衡 3 */}
-      <rect x="724" y="378" width="188" height="152" rx="8" fill="#ffffff" stroke="rgba(180, 83, 9, 0.3)" />
-      <rect x="724" y="378" width="4" height="152" rx="2" fill="#b45309" />
-      <text x="736" y="397" fill="#b45309" fontSize="11" fontWeight="800">03 · 单向沙箱与草案控制</text>
-      <text x="736" y="415" fill="#334155" fontSize="9.5" fontWeight="600">模型零写权限，用户掌控资产。</text>
-      <text x="736" y="433" fill="#64748b" fontSize="9">AI 引擎运行在独立安全沙箱中，</text>
-      <text x="736" y="449" fill="#64748b" fontSize="9">对持久层仅暴露只读纯函数 Tool；</text>
-      <text x="736" y="465" fill="#b45309" fontSize="9" fontWeight="700">计划微调只能生成可视化草案，</text>
-      <text x="736" y="481" fill="#101211" fontSize="9" fontWeight="700">必须经由用户物理审批方可落盘。</text>
-      <text x="736" y="519" fill="#176b50" fontSize="8" fontWeight="700">✓ 杜绝大模型在后台静默篡改资产</text>
-    </svg>
-  );
-}
 
 
 
@@ -720,6 +437,187 @@ function FeatureStripSection() {
   );
 }
 
+function DiagramNode({ x, width = 150, label, detail, accent = "#176b50", fill = "#ffffff" }) {
+  return (
+    <g>
+      <rect x={x} y="46" width={width} height="66" rx="9" fill={fill} stroke={accent} strokeOpacity="0.34" />
+      <text x={x + 12} y="72" fill="#101211" fontSize="13" fontWeight="800">{label}</text>
+      <text x={x + 12} y="94" fill="#64748b" fontSize="10.5">{detail}</text>
+    </g>
+  );
+}
+
+function AiRuntimeFlowSvg() {
+  return (
+    <svg className="ai-runtime-svg" viewBox="0 0 940 250" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI 分析受控运行时状态机与降级回路">
+      <defs>
+        <marker id="runtime-arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#176b50" />
+        </marker>
+        <marker id="runtime-arrow-warn" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#b45309" />
+        </marker>
+      </defs>
+
+      {/* 5 个核心主流程节点，内嵌各阶段运行约束 */}
+      <DiagramNode x={20} width={140} label="理解问题" detail="意图 · 动作 · 时间范围" />
+      <DiagramNode x={200} width={150} label="装配上下文" detail="10.8k 预算 · 任务画像" />
+      <DiagramNode x={390} width={150} label="模型选择工具" detail="按需决策 · 上限 6 轮" fill="#f3fbf7" />
+      <DiagramNode x={580} width={150} label="App 查询与计算" detail="本地只读沙盒 · 指标宏" />
+      <DiagramNode x={770} width={150} label="校验后回答" detail="证据校验 · 局限边界" />
+
+      {/* 主干水平连接线 */}
+      {[160, 350, 540, 730].map((x) => (
+        <path key={x} d={`M ${x} 79 L ${x + 38} 79`} stroke="#176b50" strokeWidth="1.5" markerEnd="url(#runtime-arrow)" />
+      ))}
+
+      {/* 正常分支：Observation 回填环路 */}
+      <path d="M 625 112 L 625 138 Q 625 144 617 144 L 503 144 Q 495 144 495 118" stroke="#176b50" strokeWidth="1.5" markerEnd="url(#runtime-arrow)" />
+      <text x="560" y="135" textAnchor="middle" fill="#176b50" fontSize="11" fontWeight="750">Observation</text>
+
+      {/* 快捷分支：无需训练数据时直接回答 */}
+      <path d="M 465 46 L 465 30 Q 465 24 473 24 L 837 24 Q 845 24 845 38" stroke="#b45309" strokeWidth="1.3" strokeDasharray="4 3" markerEnd="url(#runtime-arrow-warn)" />
+      <text x="654" y="18" textAnchor="middle" fill="#b45309" fontSize="10">无需训练数据时直接解释</text>
+
+      {/* 降级触发支线 1：模型调用超限 (≥6轮) */}
+      <path d="M 425 112 L 425 170" stroke="#b45309" strokeWidth="1.3" strokeDasharray="3 3" markerEnd="url(#runtime-arrow-warn)" />
+      <text x="421" y="150" textAnchor="end" fill="#b45309" fontSize="9.5" fontWeight="600">调用超限 (≥6轮)</text>
+
+      {/* 降级触发支线 2：本地样本不足 (<3次) */}
+      <path d="M 695 112 L 695 170" stroke="#b45309" strokeWidth="1.3" strokeDasharray="3 3" markerEnd="url(#runtime-arrow-warn)" />
+      <text x="699" y="150" textAnchor="start" fill="#b45309" fontSize="9.5" fontWeight="600">样本不足 (&lt;3次)</text>
+
+      {/* 熔断降级节点 (Circuit Breaker) */}
+      <rect x="390" y="176" width="340" height="52" rx="8" fill="#fffbeb" stroke="#b45309" strokeWidth="1.2" strokeOpacity="0.5" strokeDasharray="4 3" />
+      <text x="408" y="197" fill="#92400e" fontSize="11.5" fontWeight="800">触发熔断降级</text>
+      <text x="408" y="215" fill="#78350f" fontSize="10">停止下钻，主动暴露 limitations 并返回保守说明</text>
+
+      {/* 降级汇入线：流入最终校验输出 */}
+      <path d="M 730 202 L 837 202 Q 845 202 845 194 L 845 118" stroke="#b45309" strokeWidth="1.3" strokeDasharray="4 3" markerEnd="url(#runtime-arrow-warn)" />
+      <text x="782" y="196" textAnchor="middle" fill="#b45309" fontSize="9.5" fontWeight="750">保守兜底</text>
+    </svg>
+  );
+}
+
+function ContextAssemblySvg() {
+  return (
+    <svg className="context-assembly-svg" viewBox="0 0 460 270" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="上下文来源选择、预算装配和超限压缩闭环">
+      <defs>
+        <marker id="context-arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#176b50" />
+        </marker>
+        <marker id="context-arrow-warn" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#dc2626" />
+        </marker>
+      </defs>
+
+      {/* 左侧 3 个输入源 */}
+      <g fill="#ffffff" stroke="#176b50" strokeOpacity="0.28">
+        <rect x="12" y="28" width="120" height="38" rx="6" />
+        <rect x="12" y="74" width="120" height="38" rx="6" />
+        <rect x="12" y="120" width="120" height="38" rx="6" />
+      </g>
+      <text x="20" y="44" fill="#101211" fontSize="10.5" fontWeight="750">当前任务</text>
+      <text x="20" y="57" fill="#64748b" fontSize="9">意图 · 动作 · 时间范围</text>
+      <text x="20" y="90" fill="#101211" fontSize="10.5" fontWeight="750">近期会话</text>
+      <text x="20" y="103" fill="#64748b" fontSize="9">最近轮次 · 历史摘要</text>
+      <text x="20" y="136" fill="#101211" fontSize="10.5" fontWeight="750">训练画像</text>
+      <text x="20" y="149" fill="#64748b" fontSize="9">训练水平 · 目标偏好</text>
+
+      {/* 输入源汇聚接入中间卡片 */}
+      <path d="M 132 47 L 148 47 Q 156 47 156 60 L 156 93" stroke="#176b50" strokeWidth="1.3" />
+      <path d="M 132 139 L 148 139 Q 156 139 156 126 L 156 93" stroke="#176b50" strokeWidth="1.3" />
+      <path d="M 132 93 L 164 93" stroke="#176b50" strokeWidth="1.4" markerEnd="url(#context-arrow)" />
+
+      {/* 中间核心：预算内装配 */}
+      <rect x="168" y="34" width="130" height="118" rx="8" fill="#f3fbf7" stroke="#176b50" strokeWidth="1.2" />
+      <text x="180" y="58" fill="#101211" fontSize="12" fontWeight="800">预算内装配</text>
+      <text x="180" y="78" fill="#176b50" fontSize="11" fontWeight="750">≤ 10,800 Token</text>
+      <text x="180" y="97" fill="#64748b" fontSize="9.5">按任务相关性分层</text>
+      <text x="180" y="114" fill="#64748b" fontSize="9.5">超限触发渐进压缩</text>
+      <text x="180" y="133" fill="#2563eb" fontSize="9" fontWeight="700">+ Observation 注入</text>
+
+      {/* 装配正常交付输出 */}
+      <path d="M 298 93 L 324 93" stroke="#176b50" strokeWidth="1.4" markerEnd="url(#context-arrow)" />
+
+      {/* 右侧：本轮 Context Envelope */}
+      <rect x="328" y="44" width="120" height="98" rx="8" fill="#ffffff" stroke="#176b50" strokeOpacity="0.4" />
+      <text x="340" y="70" fill="#101211" fontSize="12" fontWeight="800">本轮 Context</text>
+      <text x="340" y="91" fill="#64748b" fontSize="9.5">结构化 Envelope</text>
+      <text x="340" y="110" fill="#176b50" fontSize="9.5" fontWeight="750">交付 Agent 推理</text>
+
+      {/* 异常下行线：Token 溢出 */}
+      <path d="M 206 152 L 206 186" stroke="#dc2626" strokeWidth="1.3" strokeDasharray="3 3" markerEnd="url(#context-arrow-warn)" />
+      <text x="201" y="172" textAnchor="end" fill="#dc2626" fontSize="9" fontWeight="750">溢出 (&gt;10.8k)</text>
+
+      {/* 底部渐进压缩节点 */}
+      <rect x="24" y="192" width="412" height="56" rx="8" fill="#fef2f2" stroke="#dc2626" strokeWidth="1.1" strokeOpacity="0.35" strokeDasharray="4 3" />
+      <text x="38" y="213" fill="#991b1b" fontSize="11" fontWeight="800">确定性渐进压缩回路 (Compaction)</text>
+      <text x="38" y="232" fill="#64748b" fontSize="9.5">早期轮次摘要  →  丢弃低权偏好  →  截断长文本明细</text>
+
+      {/* 压缩后上行回填线：重估预算 */}
+      <path d="M 262 192 L 262 158" stroke="#176b50" strokeWidth="1.3" markerEnd="url(#context-arrow)" />
+      <text x="268" y="172" textAnchor="start" fill="#176b50" fontSize="9" fontWeight="750">重估预算</text>
+    </svg>
+  );
+}
+
+function AnalyzeToolSvg() {
+  return (
+    <svg className="analyze-tool-svg" viewBox="0 0 460 270" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="训练分析工具确定性执行与安全阻断流">
+      <defs>
+        <marker id="analyze-arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#176b50" />
+        </marker>
+        <marker id="analyze-arrow-warn" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 1 1 L 7 4 L 1 7 z" fill="#b45309" />
+        </marker>
+      </defs>
+
+      {/* 主干 4 个节点 */}
+      <g>
+        <rect x="12" y="34" width="98" height="66" rx="7" fill="#ffffff" stroke="#176b50" strokeOpacity="0.32" />
+        <text x="22" y="59" fill="#101211" fontSize="11.5" fontWeight="800">解析 Query</text>
+        <text x="22" y="79" fill="#64748b" fontSize="9.3">动作 · 粒度 · 周期</text>
+
+        <rect x="122" y="34" width="98" height="66" rx="7" fill="#ffffff" stroke="#176b50" strokeOpacity="0.32" />
+        <text x="132" y="59" fill="#101211" fontSize="11.5" fontWeight="800">本地检索</text>
+        <text x="132" y="79" fill="#64748b" fontSize="9.3">Isar 只读沙盒</text>
+
+        <rect x="236" y="34" width="102" height="66" rx="7" fill="#ffffff" stroke="#176b50" strokeOpacity="0.32" />
+        <text x="246" y="59" fill="#101211" fontSize="11.5" fontWeight="800">确定性指标</text>
+        <text x="246" y="79" fill="#64748b" fontSize="9.3">Volume · 1RM 宏</text>
+
+        <rect x="352" y="34" width="96" height="66" rx="7" fill="#eff6ff" stroke="#2563eb" strokeOpacity="0.5" />
+        <text x="362" y="59" fill="#1e40af" fontSize="11.5" fontWeight="800">Observation</text>
+        <text x="362" y="79" fill="#3b82f6" fontSize="9.3">确证事实与证据</text>
+      </g>
+
+      {/* 主干水平连接线 */}
+      <path d="M 110 67 L 118 67" stroke="#176b50" strokeWidth="1.3" markerEnd="url(#analyze-arrow)" />
+      <path d="M 220 67 L 232 67" stroke="#176b50" strokeWidth="1.3" markerEnd="url(#analyze-arrow)" />
+      <path d="M 338 67 L 348 67" stroke="#176b50" strokeWidth="1.3" markerEnd="url(#analyze-arrow)" />
+
+      {/* 下方分支：样本不足触发线 */}
+      <path d="M 171 100 L 171 146" stroke="#b45309" strokeWidth="1.3" strokeDasharray="3 3" markerEnd="url(#analyze-arrow-warn)" />
+      <text x="166" y="126" textAnchor="end" fill="#b45309" fontSize="9" fontWeight="700">样本不足 (&lt;3次)</text>
+
+      {/* 阻断与局限披露卡片 */}
+      <rect x="122" y="150" width="216" height="52" rx="8" fill="#fffbeb" stroke="#b45309" strokeWidth="1.2" strokeOpacity="0.6" strokeDasharray="3 2" />
+      <text x="136" y="171" fill="#92400e" fontSize="11" fontWeight="800">安全阻断与局限披露</text>
+      <text x="136" y="189" fill="#78350f" fontSize="9.5">拒绝派生计算，注入 limitations</text>
+
+      {/* 局限汇流至 Observation */}
+      <path d="M 338 176 L 392 176 Q 400 176 400 168 L 400 106" stroke="#b45309" strokeWidth="1.3" strokeDasharray="3 3" markerEnd="url(#analyze-arrow-warn)" />
+      <text x="385" y="170" textAnchor="middle" fill="#b45309" fontSize="9" fontWeight="700">保守事实汇入</text>
+
+      {/* 底部轻量契约条 */}
+      <rect x="12" y="226" width="436" height="30" rx="6" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1" />
+      <text x="230" y="245" textAnchor="middle" fill="#64748b" fontSize="9.5">输出契约：facts · metrics · scope · limitations · pagination</text>
+    </svg>
+  );
+}
+
 export function App() {
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -775,7 +673,6 @@ export function App() {
           <a href="#requirements">痛点</a>
           <a href="#competitors">竞品</a>
           <a href="#product-decisions">决策</a>
-          <a href="#development">架构</a>
           <a href="#ai-system">AI 系统</a>
           <a href="#evaluation">AI 评测</a>
           <a href="#user-testing">用户测试</a>
@@ -831,10 +728,6 @@ export function App() {
                   </p>
                 </div>
               </div>
-
-              <blockquote className="need-conclusion">
-                FlowStrength 的差异化定位：面向进阶力量训练者的「训练记录 + AI 分析」
-              </blockquote>
             </div>
 
             <div className="needs-media-col" data-reveal>
@@ -857,6 +750,10 @@ export function App() {
                 ))}
               </div>
             </div>
+
+            <blockquote className="need-conclusion requirements-conclusion" data-reveal>
+              FlowStrength 的差异化定位：面向进阶力量训练者的「训练记录 + AI 分析」
+            </blockquote>
           </div>
         </section>
 
@@ -972,12 +869,12 @@ export function App() {
                   <h3 id="competitor-flow-title">同任务流程拆解</h3>
                 </header>
                 <div className="competitor-flowchart__scroll">
-                  <CompetitorFlowSvg />
+                  <CompetitorFlowChart />
                 </div>
               </section>
 
-              <blockquote className="competitor-conclusion">
-                记录工具难以深入分析，算法黑盒直接剥夺控制；真正的机会在于：用 AI 解释训练依据，但把控制权完整留给用户。
+              <blockquote className="need-conclusion competitor-conclusion">
+                三类产品分别强化了记录、推荐与动态指导；FlowStrength 的切入点，是降低训练干扰，将 AI 聚焦于跨周期的深度分析和可控写入
               </blockquote>
             </div>
           </div>
@@ -989,87 +886,35 @@ export function App() {
             <h2 id="product-decisions-title">产品决策</h2>
           </header>
           <div className="chapter-body product-decisions__body" data-reveal>
-            <div className="product-decisions__grid">
-              <article className="decision-card">
-                <header className="decision-card__header">
-                  <span className="decision-card__index">01</span>
-                  <h3 className="decision-card__title">AI 范围</h3>
-                </header>
-                <p className="decision-card__thesis">优先切入训练复盘阶段</p>
-                <div className="decision-stages">
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">规划阶段 · 难以满足需求</span>
-                    <p>计划与个人偏好、健身条件等多因素强相关，AI 难以在信息有限的情况下给出满意方案</p>
-                  </div>
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">执行阶段 · 延迟高且提升有限</span>
-                    <p>举铁做组需要毫秒级打卡；AI 既存在网络和生成延迟，也难以减少用户物理操作步骤</p>
-                  </div>
-                  <div className="decision-stage decision-stage--highlight">
-                    <span className="decision-stage__tag">复盘阶段 · 高价值切入</span>
-                    <p>固定统计图表分析受限，大模型擅长上下文推理与模式识别，能跨时间、跨动作进行灵活深度分析</p>
-                  </div>
-                </div>
-              </article>
+            {/* 轻量细线分栏 */}
+            <div className="decision-columns-grid">
+              {productDecisions.map((decision) => (
+                <article key={decision.index} className="decision-column">
+                  <header className="decision-column__header">
+                    <span className="decision-column__index">{decision.index}</span>
+                    <h3 className="decision-column__title">{decision.title}</h3>
+                  </header>
+                  <p className="decision-column__thesis">{decision.thesis}</p>
 
-              <article className="decision-card">
-                <header className="decision-card__header">
-                  <span className="decision-card__index">02</span>
-                  <h3 className="decision-card__title">AI 架构</h3>
-                </header>
-                <p className="decision-card__thesis">将分析主导权交给模型</p>
-                <div className="decision-stages">
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">规则主导（已放弃）· AI能力受限</span>
-                    <p>用固定规则树匹配用户意图，只能回答预设指标；面对复杂的长尾提问，完全丧失了跨数据归因能力。</p>
+                  <div className="decision-stems">
+                    {decision.stages.map((stage, idx) => (
+                      <div key={idx} className={`decision-stem decision-stem--${stage.status}`}>
+                        <span className="decision-stem__indicator" aria-hidden="true">
+                          {stage.status === "discard" && "×"}
+                          {stage.status === "adopt" && "●"}
+                          {stage.status === "guard" && "!"}
+                          {stage.status === "neutral" && "○"}
+                        </span>
+                        <div className="decision-stem__text">
+                          <strong className="decision-stem__label">{stage.tag}</strong>
+                          <p className="decision-stem__desc">{stage.desc}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="decision-stage decision-stage--highlight">
-                    <span className="decision-stage__tag">模型主导（最终选择）· 动态多步探索</span>
-                    <p>由模型自主理解长尾提问，决定调什么工具、对比哪段数据；能像真人教练一样，根据线索层层追踪原因。</p>
-                  </div>
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">受控运行 · 严格限制调用预算</span>
-                    <p>给予模型分析空间，但不给无界自由；工程上硬性约束工具调用步数与 Token 预算，超时或异常确定性回退。</p>
-                  </div>
-                </div>
-              </article>
-
-              <article className="decision-card">
-                <header className="decision-card__header">
-                  <span className="decision-card__index">03</span>
-                  <h3 className="decision-card__title">AI 权限</h3>
-                </header>
-                <p className="decision-card__thesis">模型提需求，工具做计算，用户定结果</p>
-                <div className="decision-stages">
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">指标运算 · 本地专用工具承载</span>
-                    <p>模型只负责“要什么指标”；容量统计、极限估算等派生运算由本地 Tool 确定性算出，数据不足时主动标明局限。</p>
-                  </div>
-                  <div className="decision-stage">
-                    <span className="decision-stage__tag">计划干预 · 仅生成结构化草案</span>
-                    <p>模型被物理剥离数据库写权限；所有训练调整均以可视化 Diff 草案呈现，无法在后台私自篡改训练资产。</p>
-                  </div>
-                  <div className="decision-stage decision-stage--highlight">
-                    <span className="decision-stage__tag">执行确认 · 用户拥有最高权限</span>
-                    <p>是否采纳建议、何时应用变动，裁决权完全保留在用户手中，彻底消除用户对数据失控的安全顾虑。</p>
-                  </div>
-                </div>
-              </article>
+                </article>
+              ))}
             </div>
-          </div>
-        </section>
-        {/* 05 系统分层架构 */}
-        <section className="section-chapter" id="development" aria-labelledby="dev-title">
-          <header className="chapter-header" data-reveal>
-            <h2 id="dev-title">系统分层架构</h2>
-          </header>
-
-          <div className="chapter-body">
-            <article className="ai-system-panel ai-system-panel--arch" data-reveal>
-              <div className="app-architecture__scroll">
-                <AppSystemArchitectureSvg />
-              </div>
-            </article>
           </div>
         </section>
 
@@ -1079,104 +924,39 @@ export function App() {
             <h2 id="ai-system-title">AI 系统设计</h2>
           </header>
 
-          <div className="chapter-body ai-system__body">
-            <article className="ai-system-panel ai-system-overview" data-reveal>
+          <div className="chapter-body ai-system__body" data-reveal>
+            {/* 01 受控运行时状态机与分支回路 */}
+            <article className="ai-system-panel">
               <header className="ai-system-panel__header">
                 <span>01</span>
-                <div>
-                  <h3>端到端运行链路</h3>
-                  <p>Context 提供问题与用户背景，Analyze Tool 在运行中补充可计算、可追踪的训练事实。</p>
-                </div>
+                <h3>Agent Runtime</h3>
               </header>
-              <div className="ai-runtime-flow" aria-label="FlowStrength AI 从用户问题到个性化分析回答的端到端运行链路">
-                <div className="ai-runtime-node"><span>INPUT</span><b>用户问题</b><small>文字 · 语音 · @实体</small></div>
-                <i aria-hidden="true">→</i>
-                <div className="ai-runtime-node"><span>CONTEXT</span><b>动态组装</b><small>任务 · 历史 · 个性化</small></div>
-                <i aria-hidden="true">→</i>
-                <div className="ai-runtime-node ai-runtime-node--agent"><span>REACT</span><b>Agent Runtime</b><small>理解 · 选择 · 下钻</small></div>
-                <i aria-hidden="true">⇄</i>
-                <div className="ai-runtime-node ai-runtime-node--tool"><span>TOOL</span><b>Analyze Training</b><small>查询 · 计算 · 对比</small></div>
-                <i aria-hidden="true">→</i>
-                <div className="ai-runtime-node"><span>OBSERVATION</span><b>训练事实</b><small>指标 · 范围 · 局限</small></div>
-                <i aria-hidden="true">→</i>
-                <div className="ai-runtime-node ai-runtime-node--answer"><span>OUTPUT</span><b>个性化回答</b><small>解释 · 假设 · 建议</small></div>
-              </div>
-              <div className="ai-runtime-guardrails">
-                <span>运行底座</span>
-                <b>Schema</b><b>Permission</b><b>Token Budget</b><b>Timeout</b><b>Trace</b>
+              <div className="ai-architecture__scroll">
+                <AiRuntimeFlowSvg />
               </div>
             </article>
 
+            {/* 02 & 03 两个深下钻矢量图解 */}
             <div className="ai-system-zooms">
-              <article className="ai-system-panel ai-zoom" data-reveal>
+              <article className="ai-system-panel ai-zoom">
                 <header className="ai-system-panel__header">
                   <span>02</span>
-                  <div>
-                    <h3>Context Assembly</h3>
-                    <p>在有限预算内组织本轮真正需要的信息。</p>
-                  </div>
+                  <h3>Context 动态组装</h3>
                 </header>
-                <div className="context-assembly" aria-label="AI Context 的来源、预算组装和运行中更新逻辑">
-                  <div className="context-sources">
-                    <div><span>当前任务</span><b>问题 · @实体</b><small>文字 / 语音</small></div>
-                    <div><span>会话上下文</span><b>摘要 · 最近原文</b><small>长期 / 近期</small></div>
-                    <div><span>个性化</span><b>Instructions · Memory</b><small>Training Profile</small></div>
-                    <div><span>诊断上下文</span><b>时间范围 · 分析对象</b><small>任务相关信息</small></div>
-                    <div><span>系统约束</span><b>角色 · 权限</b><small>可用工具</small></div>
-                  </div>
-                  <div className="context-merge" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-                  <div className="context-assembler">
-                    <span>CONTEXT ASSEMBLER</span>
-                    <b>按 Token 预算组合</b>
-                    <small>结构化摘要 + 最近原文 + 个性化信息 + 诊断上下文</small>
-                    <em>压缩失败 → 确定性截断回退</em>
-                  </div>
-                  <div className="context-result">
-                    <div><span>初始结果</span><b>本轮 Agent Context</b></div>
-                    <i aria-hidden="true">+</i>
-                    <div className="context-result__observation"><span>运行中更新</span><b>Tool Observation</b></div>
-                  </div>
+                <div className="ai-zoom__scroll">
+                  <ContextAssemblySvg />
                 </div>
               </article>
 
-              <article className="ai-system-panel ai-zoom" data-reveal>
+              <article className="ai-system-panel ai-zoom">
                 <header className="ai-system-panel__header">
                   <span>03</span>
-                  <div>
-                    <h3>AnalyzeTrainingTool</h3>
-                    <p>返回原始事实、派生指标、实际范围与局限，不替模型下结论。</p>
-                  </div>
+                  <h3>查询与运算工具</h3>
                 </header>
-                <div className="analyze-tool" aria-label="AnalyzeTrainingTool 从参数校验到结构化 Observation 的处理逻辑">
-                  <div className="analyze-tool__entry">
-                    <span>AGENT TOOL CALL</span>
-                    <b>分析目标 · 时间范围 · 对比需求</b>
-                    <small>Schema 校验 → Permission</small>
-                  </div>
-                  <i className="analyze-tool__arrow" aria-hidden="true">↓</i>
-                  <div className="analyze-tool__stage">
-                    <span>01 · 解析分析范围</span>
-                    <div className="analyze-tool__choices"><b>单次训练</b><b>指定动作</b><b>时间区间 / 周期</b><b>对比基线</b></div>
-                  </div>
-                  <i className="analyze-tool__arrow" aria-hidden="true">↓</i>
-                  <div className="analyze-tool__stage">
-                    <span>02 · 查询与确定性计算</span>
-                    <div className="analyze-tool__choices"><b>原始训练组</b><b>训练容量</b><b>估算 1RM</b><b>周期对比</b></div>
-                  </div>
-                  <i className="analyze-tool__arrow" aria-hidden="true">↓</i>
-                  <div className="analyze-tool__observation">
-                    <span>STRUCTURED OBSERVATION</span>
-                    <div><b>原始事实</b><b>派生指标</b><b>实际范围</b><b>局限 / 分页</b></div>
-                    <small>写回当前运行上下文 → Agent 继续查询或生成回答</small>
-                  </div>
+                <div className="ai-zoom__scroll">
+                  <AnalyzeToolSvg />
                 </div>
               </article>
-            </div>
-
-            <div className="ai-responsibility" data-reveal aria-label="AI 系统中的责任边界">
-              <div><span>AGENT</span><b>理解 · 探索 · 解释</b></div>
-              <div><span>TOOL</span><b>查询 · 计算 · 标记范围</b></div>
-              <div><span>APP</span><b>权限 · 预算 · 运行门禁</b></div>
             </div>
           </div>
         </section>
@@ -1204,23 +984,35 @@ export function App() {
                     </div>
                     <div className="eval-dimensions">
                       <div className="evaluation-hard-gate">
-                        <span className="hard-gate-label">硬门槛</span>
-                        <div className="hard-gate-tags">
-                          <span>个人事实一致</span>
-                          <span>工具权限边界</span>
-                          <span>医疗安全红线</span>
-                          <span>数据不足降级</span>
-                          <span>故障安全收口</span>
+                        <div className="eval-rule-head">
+                          <span className="hard-gate-label">P0 硬门槛</span>
+                        </div>
+                        <div className="eval-rule-grid">
+                          <div className="eval-rule-item">
+                            <b>事实与证据</b>
+                          </div>
+                          <div className="eval-rule-item">
+                            <b>权限与控制</b>
+                          </div>
+                          <div className="eval-rule-item">
+                            <b>安全边界</b>
+                          </div>
                         </div>
                       </div>
                       <div className="eval-quality-dimensions">
-                        <span className="quality-dim-label">质量维度</span>
-                        <div className="quality-dim-tags">
-                          <span>结论准确且完整</span>
-                          <span>依据与可追溯性</span>
-                          <span>不确定性与边界</span>
-                          <span>下一步可执行性</span>
-                          <span>表达清晰与克制</span>
+                        <div className="eval-rule-head">
+                          <span className="quality-dim-label">质量评分</span>
+                        </div>
+                        <div className="eval-rule-grid">
+                          <div className="eval-rule-item">
+                            <b>准确性</b>
+                          </div>
+                          <div className="eval-rule-item">
+                            <b>可信度</b>
+                          </div>
+                          <div className="eval-rule-item">
+                            <b>有用性</b>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1247,24 +1039,21 @@ export function App() {
                     </div>
                   </div>
 
-                  {/* 3. 统计指标 */}
+                  {/* 3. 评测指标 */}
                   <div className="eval-system-block">
                     <div className="eval-system-block__label">
                       <span className="eval-subtag">03</span>
-                      <h4>统计指标</h4>
+                      <h4>评测指标</h4>
                     </div>
                     <div className="eval-metrics-grid">
                       <div className="metric-chip">
-                        <span>通过率口径</span>
-                        <b>链路冒烟率 vs 严格语义通过率</b>
+                        <b>回答质量</b>
                       </div>
                       <div className="metric-chip">
-                        <span>工程性能</span>
-                        <b>端到端 P95 耗时（低于 10 秒）· 工具轨迹有效性</b>
+                        <b>稳定性</b>
                       </div>
                       <div className="metric-chip">
-                        <span>经济性成本</span>
-                        <b>单次运行平均 Token 消耗 · 调用轮次硬封顶</b>
+                        <b>效率成本</b>
                       </div>
                     </div>
                   </div>
@@ -1308,35 +1097,37 @@ export function App() {
                     </div>
                   </div>
 
-                  {/* 2. 用例分类 */}
+                  {/* 2. 评测集构成 */}
                   <div className="case-distribution-block">
                     <div className="contract-schema-label">
                       <span className="eval-subtag">02</span>
-                      <h4>用例分类</h4>
+                      <h4>评测集构成</h4>
                     </div>
                     <div className="case-contracts">
                       <div className="case-family case-family--live">
                         <header>
-                          <b>训练分析集</b>
+                          <b>全面训练分析集</b>
                         </header>
                         <div className="case-family__groups">
-                          <span>诊断回归</span>
-                          <span>深度分析</span>
-                          <span>个人事实</span>
-                          <span>程序评估</span>
-                          <span>数据不足降级</span>
-                          <span>医疗安全边界</span>
+                          <span>单次训练复盘</span>
+                          <span>动作趋势分析</span>
+                          <span>平台期诊断</span>
+                          <span>训练频率评估</span>
+                          <span>计划执行评估</span>
+                          <span>训练结构平衡</span>
                         </div>
                       </div>
                       <div className="case-family">
                         <header>
-                          <b>通用与安全边界集</b>
+                          <b>安全边界集</b>
                         </header>
-                        <div className="case-family__groups case-family__groups--four">
-                          <span>App 功能交互</span>
-                          <span>运动科学知识</span>
-                          <span>多语言鲁棒性</span>
+                        <div className="case-family__groups">
+                          <span>数据不足降级</span>
+                          <span>证据范围约束</span>
+                          <span>医疗安全边界</span>
+                          <span>写入权限边界</span>
                           <span>对抗注入防御</span>
+                          <span>任务范围边界</span>
                         </div>
                       </div>
                     </div>
@@ -1345,124 +1136,88 @@ export function App() {
               </article>
             </div>
 
-            <div className="evaluation-bottom-grid">
-              {/* 03 测试方法 */}
-              <article className="evaluation-panel" data-reveal>
-                <header className="evaluation-panel__header">
-                  <span>03</span>
-                  <div><h3>测试方法</h3></div>
-                </header>
-                <div className="eval-method-wrapper">
-                  <div className="eval-cli-bar">
-                    <div className="cli-code">
-                      <span className="cli-prompt">$</span>
-                      <code>flutter test integration_test/live_agent_eval_test.dart</code>
+            {/* 03 优化效果 */}
+            <article className="evaluation-panel evaluation-panel--full" data-reveal>
+              <header className="evaluation-panel__header">
+                <span>03</span>
+                <div><h3>评测驱动优化</h3></div>
+              </header>
+              <div className="eval-results-wrapper">
+                <div className="eval-hierarchy-bar">
+                  <span className="hierarchy-step">失败用例</span>
+                  <i>→</i>
+                  <span className="hierarchy-step">定位根因</span>
+                  <i>→</i>
+                  <span className="hierarchy-step">工程改动</span>
+                  <i>→</i>
+                  <span className="hierarchy-step">同口径复测</span>
+                </div>
+
+                <div className="eval-diff-grid">
+                  {/* 案例 01 */}
+                  <div className="eval-diff-card eval-diff-card--expanded">
+                    <div className="diff-card-head">
+                      <strong>案例 01 · 数据范围越界</strong>
                     </div>
-                    <span className="cli-env-badge">eval_world_v1 12周基准</span>
+                    <div className="diff-card-input">
+                      <b>“我最近深蹲练得怎么样？”</b>
+                    </div>
+                    <div className="diff-card-body">
+                      <div className="diff-section diff-section--del">
+                        <h4>失败</h4>
+                        <p>仅读取近 2 次记录，却断言用户“总共进行了2次训练”。</p>
+                      </div>
+
+                      <div className="diff-section diff-section--root">
+                        <h4>根因</h4>
+                        <p>Tool 没有返回覆盖时间窗和样本容量，模型把可见记录误认为全部历史。</p>
+                      </div>
+
+                      <div className="diff-section diff-section--fix">
+                        <h4>工程改动</h4>
+                        <p>Tool 透出 coverage_window 与 sample_count → Context 强注入范围约束 → 断言拦截越界定性词。</p>
+                      </div>
+
+                      <div className="diff-section diff-section--add">
+                        <h4>目标行为</h4>
+                        <p>声明覆盖窗口与样本容量，在数据不足时主动降级为单次事实客观陈述，拦截“总共/全部”等全局定性词。</p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="eval-pipeline-strip">
-                    <div className="pipeline-row">
-                      <div className="pipeline-header">
-                        <span className="pipeline-tag pipeline-tag--code">01 代码断言</span>
-                        <b>拦截越权写库、参数错漏与调用超限（零模型裁判）</b>
-                      </div>
+                  {/* 案例 02 */}
+                  <div className="eval-diff-card eval-diff-card--expanded">
+                    <div className="diff-card-head">
+                      <strong>案例 02 · 有记录，没洞察</strong>
                     </div>
-
-                    <div className="pipeline-row">
-                      <div className="pipeline-header">
-                        <span className="pipeline-tag pipeline-tag--judge">02 业务 Oracle</span>
-                        <b>逐项核验核心停滞遗漏、事实虚构与医疗红线越界</b>
-                      </div>
+                    <div className="diff-card-input">
+                      <b>“分析我今天的训练”</b>
                     </div>
+                    <div className="diff-card-body">
+                      <div className="diff-section diff-section--del">
+                        <h4>失败</h4>
+                        <p>复述动作、重量与总容量，却没有识别趋势、瓶颈或下一步动作。</p>
+                      </div>
 
-                    <div className="pipeline-row">
-                      <div className="pipeline-header">
-                        <span className="pipeline-tag pipeline-tag--human">03 人工双盲</span>
-                        <b>100% 人工复核 23 条基线，建立真值金标准校准裁判</b>
+                      <div className="diff-section diff-section--root">
+                        <h4>根因</h4>
+                        <p>Observation 只提供原始记录，高阶指标依赖模型临时计算，结果不稳定且难以复现。</p>
+                      </div>
+
+                      <div className="diff-section diff-section--fix">
+                        <h4>工程改动</h4>
+                        <p>Tool 确定性计算 e1RM 趋势、周环比与 plateau_weeks，再以结构化字段注入 Observation。</p>
+                      </div>
+
+                      <div className="diff-section diff-section--add">
+                        <h4>目标行为</h4>
+                        <p>基于确定性指标识别平台期，说明证据范围，并给出可执行且不过度确定的调整建议。</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </article>
-
-              {/* 04 优化效果 */}
-              <article className="evaluation-panel" data-reveal>
-                <header className="evaluation-panel__header">
-                  <span>04</span>
-                  <div><h3>优化效果</h3></div>
-                </header>
-                <div className="eval-results-wrapper">
-                  <div className="eval-hierarchy-bar">
-                    <span className="hierarchy-label">优化优先级</span>
-                    <span className="hierarchy-step">Tool 数据供给</span>
-                    <i>→</i>
-                    <span className="hierarchy-step">Context 装配</span>
-                    <i>→</i>
-                    <span className="hierarchy-step">规则断言拦截</span>
-                    <i>→</i>
-                    <span className="hierarchy-step">Prompt 契约</span>
-                  </div>
-
-                  <div className="eval-diff-grid">
-                    <div className="eval-diff-card">
-                      <div className="diff-card-head">
-                        <strong>局部数据当全部</strong>
-                        <span>数据范围越界</span>
-                      </div>
-                      <div className="diff-card-body">
-                        <div className="diff-line diff-line--del">
-                          <span>-</span>
-                          <p>仅读到局部记录便断言为近期全部训练，武断下结论</p>
-                        </div>
-                        <div className="diff-line diff-line--cause">
-                          <p>// Tool 透出完整性元数据 + 代码断言拦截越界主张</p>
-                        </div>
-                        <div className="diff-line diff-line--add">
-                          <span>+</span>
-                          <p>准确锚定数据覆盖窗口，样本不足时主动声明边界</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="eval-diff-card">
-                      <div className="diff-card-head">
-                        <strong>罗列明细缺少分析</strong>
-                        <span>高阶特征缺失</span>
-                      </div>
-                      <div className="diff-card-body">
-                        <div className="diff-line diff-line--del">
-                          <span>-</span>
-                          <p>机械罗列动作与负荷流水账，遗漏深蹲 77.5kg 停滞</p>
-                        </div>
-                        <div className="diff-line diff-line--cause">
-                          <p>// Tool 底层直接计算派生进展与停滞指标注入</p>
-                        </div>
-                        <div className="diff-line diff-line--add">
-                          <span>+</span>
-                          <p>模型自然捕捉异常，主动输出停滞归因与微调建议</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="eval-leap-strip">
-                    <div className="leap-item">
-                      <span>Oracle 语义达标率</span>
-                      <b>43.5% <i>→</i> 80%+</b>
-                    </div>
-                    <div className="leap-item">
-                      <span>P0 门禁失败</span>
-                      <b>4 条 <i>→</i> 0 条</b>
-                    </div>
-                    <div className="leap-item">
-                      <span>单次 Token 消耗</span>
-                      <b>降低 50%+</b>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
+              </div>
+            </article>
           </div>
         </section>
 
