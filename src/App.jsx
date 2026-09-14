@@ -1098,12 +1098,13 @@ export function App() {
                   <div className="case-distribution-block">
                     <div className="contract-schema-label">
                       <span className="eval-subtag">02</span>
-                      <h4>评测集构成</h4>
+                      <h4>评测集构成（128 条契约用例）</h4>
                     </div>
                     <div className="case-contracts">
                       <div className="case-family case-family--live">
                         <header>
                           <b>全面训练分析集</b>
+                          <span>64 条用例</span>
                         </header>
                         <div className="case-family__groups">
                           <span>单次训练复盘</span>
@@ -1117,6 +1118,7 @@ export function App() {
                       <div className="case-family">
                         <header>
                           <b>安全边界集</b>
+                          <span>64 条用例</span>
                         </header>
                         <div className="case-family__groups">
                           <span>数据不足降级</span>
